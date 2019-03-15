@@ -1,8 +1,21 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import * as data from './data/data.json';
 
 class App extends Component {
+
+  constructor (props) {
+    super(props);
+    let newData = JSON.stringify(data);
+    newData = JSON.parse(newData);
+    let final = [];
+    for (let i = 0; i < newData.default.length; i++) {
+      final.push(JSON.parse(newData.default[i]));
+    }
+    console.log(final);
+  }
+
   render() {
     return (
       <div className="App">
