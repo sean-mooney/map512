@@ -23,6 +23,35 @@
   color: #61dafb;
 }
 
+.markerContainer {
+  
+}
+
+.markerInfo {
+  position: absolute;
+  top: -30px;
+  left: 20px;
+  border: 1px solid rgb(211, 211, 211);
+  background-color: white;
+  min-width: 125px;
+  min-height: 35px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.pin svg {
+  color: rgb(226, 32, 32);
+  font-size: 32px;
+}
+
+.eventTitle {
+  color: black;
+  word-wrap: wrap;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

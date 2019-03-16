@@ -1,5 +1,6 @@
 import requests
 import json
+import geocoder
 from bs4 import BeautifulSoup
 
 eventArray = []
@@ -24,7 +25,14 @@ class Object:
 
 pageNum = 1
 stop = False
+apiKey = ''
 
+f = open("key.txt", "r")
+apiKey = f.readline(100)
+f.close()
+if apiKey == '':
+    print('no api key')
+    stop = True
 while not stop:
     url = 'https://2019.do512.com/?page=' + str(pageNum)
     response = requests.get(url)
@@ -33,7 +41,7 @@ while not stop:
     soup = BeautifulSoup(html, 'lxml')
     eventList = soup.find('div', attrs={'class': 'ds-events-group'})
     
-    if eventList.findAll('div', {'class': 'ds-listing'}) == None or pageNum == 5:
+    if eventList.findAll('div', {'class': 'ds-listing'}) == None or pageNum == 2:
         stop = True
         break
     i = 0
@@ -51,6 +59,8 @@ while not stop:
         address = event.find('div', {'class': 'ds-venue-name'}).find('a')['href']
         if 'venues' not in address:
             eventToAdd.address = address.partition('q=')[2]
+            g = geocoder.bing(eventToAdd.address, key='Ak-NT9oLpkkIZQQUpDVh0O8eAh2LSv39o6UWpkfrZG78weT9N-HJ99lKyVXxHHJD')
+            eventToAdd.location = g.latlng
         else:
             eventToAdd.address = address.partition('venues')[2]
 
@@ -81,6 +91,6 @@ while not stop:
         i += 1
     print(pageNum)
     pageNum += 1
-with open('../map512/data/data.json', 'w') as f:
+with open('../map512/src/data/data.json', 'w') as f:
     json.dump(eventArray, f)
 print('Done with ' + str(len(eventArray)) + ' results')
