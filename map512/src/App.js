@@ -7,34 +7,15 @@ import config from './config/keys';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMapMarker } from '@fortawesome/free-solid-svg-icons'
 
-class Marker extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render(props) {
-    return (
-      <div className="markerContainer">
-        <div className="pin">
-          <FontAwesomeIcon icon={faMapMarker} />
-        </div>
-        <div className="markerInfo">
-          <div className="eventTitle">
-            {this.props.title}
-          </div>
-        </div>
-      </div>
-    );
-  };
-}
-
 class App extends Component {
-  state = {
-    events: [],
-    ready: false
-  }
+  
   constructor(props) {
     super(props);
-    
+    this.state = {
+      events: [],
+      ready: false,
+      eventShown: null
+    }
     let newData = JSON.stringify(data);
     newData = JSON.parse(newData);
     let final = [];
@@ -43,6 +24,7 @@ class App extends Component {
     }
     this.state.events = final;
     this.state.ready = true;
+    this.toggleInfo = this.toggleInfo.bind(this);
   }
 
   static defaultProps = {
@@ -53,19 +35,26 @@ class App extends Component {
     zoom: 12,
   };
 
+  toggleInfo(eventId) {
+    this.setState({
+      eventShown: eventId
+    });
+  }
 
   render() {
     if (this.state.ready) {
-      const eventsList = this.state.events.map((event) => {
+      const eventsMap = this.state.events.map((event, i) => {
         if (!event.location) {
-          console.log('pooop',event);
           return;
         }
         return (
           <Marker
+            key={i}
+            currentEvent={this.state.eventShown}
+            event={event}
             lat={event.location[0]}
             lng={event.location[1]}
-            title={event.title}
+            toggleInfo={this.toggleInfo}
           />
         );
       });
@@ -78,8 +67,13 @@ class App extends Component {
                 defaultCenter={this.props.center}
                 defaultZoom={this.props.zoom}
               >
-                {eventsList}
+                {eventsMap}
               </GoogleMapReact>
+              <SidePanel
+                events={this.state.events}
+              >
+
+              </SidePanel>
             </div>
           </header>
         </div>
@@ -90,6 +84,56 @@ class App extends Component {
       );
     }
 
+  }
+}
+
+class Marker extends Component {
+  render() {
+    return (
+      <div id={"pin " + this.props.$dimensionKey} className="markerContainer">
+        <div className="pin" onClick={() => this.props.toggleInfo(this.props.$dimensionKey)}>
+          <FontAwesomeIcon icon={faMapMarker} />
+        </div>
+        {/* <div className={`markerInfo ${this.props.currentEvent === this.props.$dimensionKey ? 'showInfo' : ''}`}> MARKER INFO POPUP
+          <div className="eventTitle">
+            {this.props.event.title}
+          </div>
+        </div> */}
+      </div>
+    );
+  };
+}
+
+class SidePanel extends Component {
+  render() {
+    const eventsList = this.props.events.map((event, i) => {
+      if (!event.location) {
+        return;
+      }
+      return (
+        <ListEventCard
+          key={i}
+          event={event}
+        />
+      );
+    });
+    return (
+      <div className="sidePanel">
+        {eventsList}
+      </div>
+    )
+  }
+}
+
+class ListEventCard extends Component {
+  render() {
+    return (
+      <div className={`eventCard`} style={{ backgroundImage: `url(${this.props.event.backgroundImage})`}}>
+        <div className="eventCardTitle">
+        {this.props.event.title}
+        </div>
+      </div>
+    )
   }
 }
 

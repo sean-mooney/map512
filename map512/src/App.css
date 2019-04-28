@@ -24,22 +24,31 @@
 }
 
 .markerContainer {
-  
+  width: fit-content;
 }
+
 
 .markerInfo {
   position: absolute;
-  top: -30px;
-  left: 20px;
+  top: -50px;
+  left: 13px;
   border: 1px solid rgb(211, 211, 211);
   background-color: white;
-  min-width: 125px;
-  min-height: 35px;
+  min-width: 300px;
+  min-height: 65px;
   border-radius: 6px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   padding: 8px;
+  z-index: 100000;
+}
+
+.showInfo {
+  display: flex;
+}
+.pin {
+  cursor: pointer;
 }
 
 .pin svg {
@@ -50,6 +59,45 @@
 .eventTitle {
   color: black;
   word-wrap: wrap;
+}
+
+.sidePanel {
+  position: fixed;
+  width: 35vw;
+  height: 100vh;
+  background-color: white;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  box-shadow: -6px 0px 8px 10px #888888;
+  overflow-y: scroll;
+}
+
+.eventCard {
+  height: 150px;
+  padding: 8px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  min-height: 150px;
+  transition: min-height 0.24s ease-out;
+}
+
+.eventCard:hover {
+  min-height: 300px;
+}
+
+.eventCardTitle {
+  color: white;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  padding-left: 20px;
+  text-shadow: 0px 0px 2px #000000;
+  
 }
 
 @keyframes App-logo-spin {
