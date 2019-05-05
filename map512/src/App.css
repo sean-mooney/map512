@@ -71,6 +71,7 @@
   left: 0;
   box-shadow: -6px 0px 8px 10px #888888;
   overflow-y: scroll;
+  max-width: 450px;
 }
 
 .eventCard {

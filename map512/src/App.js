@@ -14,7 +14,9 @@ class App extends Component {
     this.state = {
       events: [],
       ready: false,
-      eventShown: null
+      eventShown: null,
+      mapElement: null,
+      mapApi: null
     }
     let newData = JSON.stringify(data);
     newData = JSON.parse(newData);
@@ -24,6 +26,7 @@ class App extends Component {
     }
     this.state.events = final;
     this.state.ready = true;
+    this.finalizeApp = this.finalizeApp.bind(this);
     this.toggleInfo = this.toggleInfo.bind(this);
   }
 
@@ -35,7 +38,17 @@ class App extends Component {
     zoom: 12,
   };
 
-  toggleInfo(eventId) {
+  finalizeApp(map, maps) {
+    this.setState({
+      mapElement: map,
+      mapApi: maps
+    });
+  }
+
+  toggleInfo(eventId, event) {
+    let latLng = new this.state.mapApi.LatLng(event.location[0]-0.002, event.location[1]);
+    this.state.mapElement.zoom = 15;
+    this.state.mapElement.panTo(latLng);
     this.setState({
       eventShown: eventId
     });
@@ -61,15 +74,17 @@ class App extends Component {
       return (
         <div className="App">
           <header className="App-header">
-            <div style={{ height: '100vh', width: '100%' }}>
+            <div style={{ height: '100vh', width: '65vw', marginLeft: '35vw'  }}>
               <GoogleMapReact
                 bootstrapURLKeys={{ key: config.googleMapsKey }}
                 defaultCenter={this.props.center}
                 defaultZoom={this.props.zoom}
+                onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
               >
                 {eventsMap}
               </GoogleMapReact>
               <SidePanel
+                toggleInfo={this.toggleInfo}
                 events={this.state.events}
               >
 
@@ -91,7 +106,7 @@ class Marker extends Component {
   render() {
     return (
       <div id={"pin " + this.props.$dimensionKey} className="markerContainer">
-        <div className="pin" onClick={() => this.props.toggleInfo(this.props.$dimensionKey)}>
+        <div className="pin" onClick={() => this.props.toggleInfo(this.props.$dimensionKey, this.props.event)}>
           <FontAwesomeIcon icon={faMapMarker} />
         </div>
         {/* <div className={`markerInfo ${this.props.currentEvent === this.props.$dimensionKey ? 'showInfo' : ''}`}> MARKER INFO POPUP
@@ -111,7 +126,8 @@ class SidePanel extends Component {
         return;
       }
       return (
-        <ListEventCard
+        <ListEventCard 
+          onClick={() => this.props.toggleInfo(this.props.$dimensionKey)}
           key={i}
           event={event}
         />
