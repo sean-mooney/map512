@@ -19,7 +19,8 @@ class App extends Component {
       mapElement: null,
       mapApi: null,
       eventsPerVenueArrayByLat: {},
-      sidePanel: false
+      sidePanel: true,
+      currentTab: "events"
     }
     let newData = JSON.stringify(data);
     newData = JSON.parse(newData);
@@ -44,6 +45,7 @@ class App extends Component {
     this.toggleInfo = this.toggleInfo.bind(this);
     this.toggleHovered = this.toggleHovered.bind(this);
     this.toggleSidePanel = this.toggleSidePanel.bind(this);
+    this.selectTab = this.selectTab.bind(this);
   }
 
   static defaultProps = {
@@ -64,7 +66,7 @@ class App extends Component {
 
   toggleInfo(event) {
     let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]);
-    if (this.state.mapElement.zoom < 15) {
+    if (this.state.mapElement.zoom <= 12) {
       this.state.mapElement.zoom = 15;
     }
     this.state.mapElement.panTo(latLng);
@@ -90,6 +92,15 @@ class App extends Component {
     sidePanelElement.classList.toggle("expandPanel");
     this.setState({
       sidePanel: sidePanelElement.classList.contains("expandPanel")
+    })
+  }
+
+  selectTab(newTab) {
+    if (newTab === this.state.currentTab) {
+      return;
+    }
+    this.setState({
+      currentTab: newTab
     })
   }
 
@@ -120,9 +131,11 @@ class App extends Component {
               <SidePanel
                 toggleInfo={this.toggleInfo}
                 toggleHovered={this.toggleHovered}
+                selectTab={this.selectTab}
                 currentEvent={this.state.eventShown}
                 eventHovered={this.state.eventHovered}
                 events={this.state.events}
+                currentTab={this.state.currentTab}
               >
 
               </SidePanel>
@@ -162,10 +175,9 @@ class Marker extends Component {
         </div>
         <div className={`markerInfo ${this.props.currentEvent === this.props.event.eventId ? 'showInfo' : ''}`}>
           <div className="markerDescription">
-            <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].events.length}</span> events at <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].venue}</span>
+            <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].events.length}</span> event{this.props.venueEventListByLat[this.props.event.location[0]].events.length > 1 ? "s" : ""} at <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].venue}</span>
           </div>
-          <div className="popupArrow">
-          </div>
+          <div className="viewButton">View</div>
         </div>
       </div>
     );
@@ -189,7 +201,17 @@ class SidePanel extends Component {
       );
     });
     return (
-      <div className="sidePanel" id="sidePanel">
+      <div className="sidePanel expandPanel" id="sidePanel">
+        <div className="sidePanelHeader">
+          <div className="segmentContainer">
+            <div className={`segment ${this.props.currentTab === "events" ? "activated" : ""}`} onClick={() => this.props.selectTab("events")}>
+              Events
+            </div>
+            <div className={`segment ${this.props.currentTab === "venues" ? "activated" : ""}`} onClick={() => this.props.selectTab("venues")}>
+              Venues
+            </div>
+          </div>
+        </div>
         <div className="eventsList">
           {eventsList}
         </div>
@@ -204,6 +226,22 @@ class ListEventCard extends Component {
       <div className={`eventCard`} style={{ backgroundImage: `url(${this.props.event.backgroundImage})`}}>
         <div className="eventCardTitle">
           {this.props.event.title}
+        </div>
+        <div className={`eventCardOptions`}>
+          <div className="segmentContainer segmentOptions">
+            <div className="segment">
+              Map
+            </div>
+            <div className="segment">
+              Venue
+            </div>
+            <div className="segment">
+              Details
+            </div>
+            <div className="segment">
+              Do512
+            </div>
+          </div>
         </div>
       </div>
     )
