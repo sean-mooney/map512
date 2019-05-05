@@ -22,6 +22,7 @@ class App extends Component {
     newData = JSON.parse(newData);
     let final = [];
     for (let i = 0; i < newData.default.length; i++) {
+      final.eventId = i;
       final.push(JSON.parse(newData.default[i]));
     }
     this.state.events = final;
@@ -46,7 +47,7 @@ class App extends Component {
   }
 
   toggleInfo(eventId, event) {
-    let latLng = new this.state.mapApi.LatLng(event.location[0]-0.002, event.location[1]);
+    let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]);
     this.state.mapElement.zoom = 15;
     this.state.mapElement.panTo(latLng);
     this.setState({
@@ -74,7 +75,13 @@ class App extends Component {
       return (
         <div className="App">
           <header className="App-header">
-            <div style={{ height: '100vh', width: '65vw', marginLeft: '35vw'  }}>
+            <div className="appContainer" style={{ height: '100vh', width: '100%'  }}>
+              <SidePanel
+                toggleInfo={this.toggleInfo}
+                events={this.state.events}
+              >
+
+              </SidePanel>
               <GoogleMapReact
                 bootstrapURLKeys={{ key: config.googleMapsKey }}
                 defaultCenter={this.props.center}
@@ -83,12 +90,6 @@ class App extends Component {
               >
                 {eventsMap}
               </GoogleMapReact>
-              <SidePanel
-                toggleInfo={this.toggleInfo}
-                events={this.state.events}
-              >
-
-              </SidePanel>
             </div>
           </header>
         </div>
@@ -105,7 +106,7 @@ class App extends Component {
 class Marker extends Component {
   render() {
     return (
-      <div id={"pin " + this.props.$dimensionKey} className="markerContainer">
+      <div id={"pin " + this.props.event.eventId} className="markerContainer">
         <div className="pin" onClick={() => this.props.toggleInfo(this.props.$dimensionKey, this.props.event)}>
           <FontAwesomeIcon icon={faMapMarker} />
         </div>
