@@ -126,18 +126,20 @@ class App extends Component {
               >
 
               </SidePanel>
-              <div className={`togglePanel ${this.state.sidePanel ? 'extendToggle' : ''}`} onClick={() => { this.toggleSidePanel() }}>
-                <FontAwesomeIcon icon={faArrowRight} />
+              <div className="mapContainer">
+                <GoogleMapReact
+                  bootstrapURLKeys={{ key: config.googleMapsKey }}
+                  defaultCenter={this.props.center}
+                  defaultZoom={this.props.zoom}
+                  options={this.props.options}
+                  onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
+                >
+                  {eventsMap}
+                </GoogleMapReact>
+                <div className={`togglePanel ${this.state.sidePanel ? 'extendToggle' : ''}`} onClick={() => { this.toggleSidePanel() }}>
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </div>
               </div>
-              <GoogleMapReact
-                bootstrapURLKeys={{ key: config.googleMapsKey }}
-                defaultCenter={this.props.center}
-                defaultZoom={this.props.zoom}
-                options={this.props.options}
-                onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
-              >
-                {eventsMap}
-              </GoogleMapReact>
             </div>
           </header>
         </div>

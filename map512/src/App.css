@@ -30,6 +30,11 @@
   white-space: nowrap;
 }
 
+.mapContainer {
+  position: relative;
+  width: 100%;
+}
+
 .markerContainer {
   width: fit-content;
 }
@@ -130,7 +135,7 @@
 }
 
 .togglePanel {
-  position: fixed;
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,8 +151,16 @@
   transition: left 0.24s linear;
 }
 
-.extendToggle {
+/* .extendToggle {
   left: 26vw;
+} */
+
+.togglePanel svg {
+  transition: transform 0.24s linear;
+}
+
+.extendToggle svg {
+  transform: rotate(180deg);
 }
 
 .eventCard:hover {
