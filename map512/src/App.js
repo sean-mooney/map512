@@ -5,30 +5,45 @@ import * as data from './data/data.json';
 import GoogleMapReact from 'google-map-react';
 import config from './config/keys';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMapMarker } from '@fortawesome/free-solid-svg-icons'
+import { faMapMarker, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import mapOptions from './config/mapOptions.json';
 
 class App extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
       events: [],
       ready: false,
       eventShown: null,
+      eventHovered: null,
       mapElement: null,
-      mapApi: null
+      mapApi: null,
+      eventsPerVenueArrayByLat: {},
+      sidePanel: false
     }
     let newData = JSON.stringify(data);
     newData = JSON.parse(newData);
     let final = [];
     for (let i = 0; i < newData.default.length; i++) {
-      final.eventId = i;
-      final.push(JSON.parse(newData.default[i]));
+      let newEvent = JSON.parse(newData.default[i])
+      newEvent.eventId = i;
+      final.push(newEvent);
+
+      if (newEvent.location) {
+        if (!this.state.eventsPerVenueArrayByLat[newEvent.location[0]]) {
+          this.state.eventsPerVenueArrayByLat[newEvent.location[0]] = {}
+          this.state.eventsPerVenueArrayByLat[newEvent.location[0]].venue = newEvent.venue;          
+          this.state.eventsPerVenueArrayByLat[newEvent.location[0]].events = [];
+        }
+        this.state.eventsPerVenueArrayByLat[newEvent.location[0]].events.push(newEvent);
+      }
     }
     this.state.events = final;
     this.state.ready = true;
     this.finalizeApp = this.finalizeApp.bind(this);
     this.toggleInfo = this.toggleInfo.bind(this);
+    this.toggleHovered = this.toggleHovered.bind(this);
+    this.toggleSidePanel = this.toggleSidePanel.bind(this);
   }
 
   static defaultProps = {
@@ -37,6 +52,7 @@ class App extends Component {
       lng: -97.7431
     },
     zoom: 12,
+    options: mapOptions
   };
 
   finalizeApp(map, maps) {
@@ -46,13 +62,35 @@ class App extends Component {
     });
   }
 
-  toggleInfo(eventId, event) {
+  toggleInfo(event) {
     let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]);
-    this.state.mapElement.zoom = 15;
+    if (this.state.mapElement.zoom < 15) {
+      this.state.mapElement.zoom = 15;
+    }
     this.state.mapElement.panTo(latLng);
     this.setState({
-      eventShown: eventId
+      eventShown: event.eventId
     });
+  }
+
+  toggleHovered(eventId) {
+    if (this.state.eventHovered === eventId || eventId === null) {
+      // this.setState({
+      //   eventHovered: null
+      // });
+    } else {
+      this.setState({
+        eventHovered: eventId
+      });
+    }
+  }
+
+  toggleSidePanel() {
+    let sidePanelElement = document.getElementById("sidePanel");
+    sidePanelElement.classList.toggle("expandPanel");
+    this.setState({
+      sidePanel: sidePanelElement.classList.contains("expandPanel")
+    })
   }
 
   render() {
@@ -63,8 +101,11 @@ class App extends Component {
         }
         return (
           <Marker
+            
             key={i}
             currentEvent={this.state.eventShown}
+            eventHovered={this.state.eventHovered}
+            venueEventListByLat={this.state.eventsPerVenueArrayByLat}
             event={event}
             lat={event.location[0]}
             lng={event.location[1]}
@@ -78,14 +119,21 @@ class App extends Component {
             <div className="appContainer" style={{ height: '100vh', width: '100%'  }}>
               <SidePanel
                 toggleInfo={this.toggleInfo}
+                toggleHovered={this.toggleHovered}
+                currentEvent={this.state.eventShown}
+                eventHovered={this.state.eventHovered}
                 events={this.state.events}
               >
 
               </SidePanel>
+              <div className={`togglePanel ${this.state.sidePanel ? 'extendToggle' : ''}`} onClick={() => { this.toggleSidePanel() }}>
+                <FontAwesomeIcon icon={faArrowRight} />
+              </div>
               <GoogleMapReact
                 bootstrapURLKeys={{ key: config.googleMapsKey }}
                 defaultCenter={this.props.center}
                 defaultZoom={this.props.zoom}
+                options={this.props.options}
                 onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
               >
                 {eventsMap}
@@ -107,14 +155,16 @@ class Marker extends Component {
   render() {
     return (
       <div id={"pin " + this.props.event.eventId} className="markerContainer">
-        <div className="pin" onClick={() => this.props.toggleInfo(this.props.$dimensionKey, this.props.event)}>
+        <div className="pin" onClick={() => this.props.toggleInfo(this.props.event)}>
           <FontAwesomeIcon icon={faMapMarker} />
         </div>
-        {/* <div className={`markerInfo ${this.props.currentEvent === this.props.$dimensionKey ? 'showInfo' : ''}`}> MARKER INFO POPUP
-          <div className="eventTitle">
-            {this.props.event.title}
+        <div className={`markerInfo ${this.props.currentEvent === this.props.event.eventId ? 'showInfo' : ''}`}>
+          <div className="markerDescription">
+            <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].events.length}</span> events at <span className="venueName">{this.props.venueEventListByLat[this.props.event.location[0]].venue}</span>
           </div>
-        </div> */}
+          <div className="popupArrow">
+          </div>
+        </div>
       </div>
     );
   };
@@ -128,15 +178,19 @@ class SidePanel extends Component {
       }
       return (
         <ListEventCard 
-          onClick={() => this.props.toggleInfo(this.props.$dimensionKey)}
+          onMouseEnter={() => this.props.toggleHovered(event.eventId)}
+          onMouseLeave={() => this.props.toggleHovered(event.eventId)}
+          onClick={() => this.props.toggleInfo(event.eventId)}
           key={i}
           event={event}
         />
       );
     });
     return (
-      <div className="sidePanel">
-        {eventsList}
+      <div className="sidePanel" id="sidePanel">
+        <div className="eventsList">
+          {eventsList}
+        </div>
       </div>
     )
   }
@@ -147,7 +201,7 @@ class ListEventCard extends Component {
     return (
       <div className={`eventCard`} style={{ backgroundImage: `url(${this.props.event.backgroundImage})`}}>
         <div className="eventCardTitle">
-        {this.props.event.title}
+          {this.props.event.title}
         </div>
       </div>
     )

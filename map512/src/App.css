@@ -37,11 +37,11 @@
 
 .markerInfo {
   position: absolute;
-  top: -50px;
-  left: 13px;
+  top: -65px;
+  left: -135px;
   border: 1px solid rgb(211, 211, 211);
   background-color: white;
-  min-width: 300px;
+  width: 300px;
   min-height: 65px;
   border-radius: 6px;
   display: none;
@@ -49,6 +49,44 @@
   justify-content: center;
   padding: 8px;
   z-index: 100000;
+  box-shadow: 0px 0px 20px 1px #99999959;
+}
+
+.markerInfo:after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -8px;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-left: 1px solid rgb(211, 211, 211);
+  border-bottom: 1px solid rgb(211, 211, 211);
+  -moz-transform:rotate(-45deg);
+  -webkit-transform:rotate(-45deg);
+}
+
+.venueName {
+  color: black;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.markerDescription {
+  color: black;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.eventCount {
+  color: black;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .showInfo {
@@ -60,24 +98,26 @@
 
 .pin svg {
   color: rgb(226, 32, 32);
-  font-size: 32px;
+  font-size: 40px;
 }
 
-.eventTitle {
-  color: black;
-  word-wrap: wrap;
-}
 
 .sidePanel {
-  /* position: fixed; */
-  width: 35vw;
+  position: relative;
   height: 100vh;
   background-color: white;
   z-index: 9999;
   box-shadow: -6px 0px 8px 10px #888888;
   overflow-y: scroll;
-  max-width: 450px;
+  width: 35vw;
+  max-width: 0px;
+  transition: max-width 0.24s linear;
 }
+
+.expandPanel {
+  max-width: 350px;
+}
+
 
 .eventCard {
   padding: 8px;
@@ -87,6 +127,27 @@
   cursor: pointer;
   min-height: 150px;
   transition: min-height 0.24s ease-out;
+}
+
+.togglePanel {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(2, 133, 221);
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  z-index: 99999;
+  top: 20px;
+  left: 0;
+  transition: left 0.24s linear;
+}
+
+.extendToggle {
+  left: 26vw;
 }
 
 .eventCard:hover {
@@ -104,6 +165,7 @@
   text-shadow: 0px 0px 2px #000000;
   
 }
+
 
 @keyframes App-logo-spin {
   from {
