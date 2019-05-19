@@ -222,15 +222,28 @@
   margin-top: 50px;
 }
 
+.eventCardTitleScrollContainer {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-color:  transparent;
+  position: relative;
+  min-height: 45px;
+}
+
+.eventCardTitleScrollContainer::-webkit-scrollbar { 
+    display: none;
+}
+
 .eventCardTitle {
   color: white;
   font-size: 16px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  /* text-overflow: ellipsis; */
+  /* overflow: hidden; */
   white-space: nowrap;
   text-align: left;
   padding: 8px 20px;
   text-shadow: 0px 0px 2px #000000;
+  width: fit-content;
 }
 
 .viewButton {
@@ -255,7 +268,6 @@
 .eventCard:hover > .eventCardOptions{
   opacity: 1;
 }
-
 
 @keyframes App-logo-spin {
   from {
