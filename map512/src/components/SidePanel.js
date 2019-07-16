@@ -23,10 +23,10 @@ export class SidePanel extends Component {
                     <div className="segmentContainer">
                         <div className={`segment ${this.props.currentTab === "events" ? "activated" : ""}`} onClick={() => this.props.selectTab("events")}>
                             Events
-            </div>
+                        </div>
                         <div className={`segment ${this.props.currentTab === "venues" ? "activated" : ""}`} onClick={() => this.props.selectTab("venues")}>
                             Venues
-            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="eventsList">

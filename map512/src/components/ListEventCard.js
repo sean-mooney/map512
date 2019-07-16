@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { EventModal } from './EventModal';
 export class ListEventCard extends Component {
     constructor(props) {
         super(props);
@@ -10,6 +10,8 @@ export class ListEventCard extends Component {
 
         this.turnOnTitleScroll = this.turnOnTitleScroll.bind(this);
         this.turnOffTitleScroll = this.turnOffTitleScroll.bind(this);
+        this.openDo512Link = this.openDo512Link.bind(this);
+        this.openEventDetail = this.openEventDetail.bind(this);
     }
 
     turnOnTitleScroll(e) {
@@ -40,6 +42,21 @@ export class ListEventCard extends Component {
         }
     }
 
+    openDo512Link(url) {
+        window.open(url, '_blank');
+    }
+
+    openEventDetail(event) {
+        console.log('yes');
+        var modal = React.createClass({
+            render: function () {
+                return (
+                    <EventModal width="45%" height="60%" event={this.props.event}></EventModal>
+                );
+            }
+        });
+    }
+
     render() {
         return (
             <div className={`eventCard`} onMouseLeave={() => this.turnOffTitleScroll()} onMouseEnter={(e) => this.turnOnTitleScroll(e)} style={{ backgroundImage: `url(${this.props.event.backgroundImage})` }}>
@@ -52,8 +69,8 @@ export class ListEventCard extends Component {
                     <div className="segmentContainer segmentOptions">
                         <div className="segment">Map</div>
                         <div className="segment">Venue</div>
-                        <div className="segment">Details</div>
-                        <div className="segment">Do512</div>
+                        <div className="segment" onClick={() => {this.openEventDetail(this.props.event)}}>Details</div>
+                        <div className="segment" onClick={() => {this.openDo512Link(this.props.event.url)}}>Do512</div>
                     </div>
                 </div>
             </div>

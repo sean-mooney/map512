@@ -1,6 +1,9 @@
 {
-    "fullscreenControl": false,
-    "scaleControl": true,
-    "keyboardShortcuts": false,
-    "clickableIcons": false
+    "enableClickableLogo": false,
+    "maxZoom": 20,
+    "minZoom": 12,
+    "navigationBarMode": "compact",
+    "showLocateMeButton": false,
+    "showDashboard": false,
+    "showScalebar": false
 }

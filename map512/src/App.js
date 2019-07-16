@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as data from './data/data.json';
-import GoogleMapReact from 'google-map-react';
+// import GoogleMapReact from 'google-map-react';
+import { ReactBingmaps } from 'react-bingmaps';
 import config from './config/keys';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import mapOptions from './config/mapOptions.json';
 import { Marker } from './components/Marker';
 import { SidePanel } from './components/SidePanel';
+import { EventModal } from './components/EventModal';
 
 class App extends Component {
   constructor(props) {
@@ -50,10 +52,7 @@ class App extends Component {
   }
 
   static defaultProps = {
-    center: {
-      lat: 30.2672,
-      lng: -97.7431
-    },
+    center: [30.2672,-97.7431],
     zoom: 12,
     options: mapOptions
   };
@@ -113,7 +112,6 @@ class App extends Component {
         }
         return (
           <Marker
-            
             key={i}
             currentEvent={this.state.eventShown}
             eventHovered={this.state.eventHovered}
@@ -125,6 +123,7 @@ class App extends Component {
           />
         );
       });
+      console.log(eventsMap);
       return (
         <div className="App">
           <header className="App-header">
@@ -137,19 +136,20 @@ class App extends Component {
                 eventHovered={this.state.eventHovered}
                 events={this.state.events}
                 currentTab={this.state.currentTab}
+                pushPins={eventsMap}
               >
 
               </SidePanel>
               <div className="mapContainer">
-                <GoogleMapReact
-                  bootstrapURLKeys={{ key: config.googleMapsKey }}
-                  defaultCenter={this.props.center}
-                  defaultZoom={this.props.zoom}
-                  options={this.props.options}
-                  onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
+                <ReactBingmaps
+                  bingmapKey={ config.bingMapsKey }
+                  center={this.props.center}
+                  zoom={this.props.zoom}
+                  mapOptions={this.props.options}
+                  // onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
                 >
                   {eventsMap}
-                </GoogleMapReact>
+                </ReactBingmaps>
                 <div className={`togglePanel ${this.state.sidePanel ? 'extendToggle' : ''}`} onClick={() => { this.toggleSidePanel() }}>
                   <FontAwesomeIcon icon={faArrowRight} />
                 </div>
