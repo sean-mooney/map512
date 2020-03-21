@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as data from './data/data.json';
-// import GoogleMapReact from 'google-map-react';
-import { ReactBingmaps } from 'react-bingmaps';
+import GoogleMapReact from 'google-map-react';
+// import { ReactBingmaps } from 'react-bingmaps';
 import config from './config/keys';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import mapOptions from './config/mapOptions.json';
+import mapConfig from './config/mapConfig.json';
 import { Marker } from './components/Marker';
 import { SidePanel } from './components/SidePanel';
 import { EventModal } from './components/EventModal';
@@ -22,7 +20,6 @@ class App extends Component {
       mapElement: null,
       mapApi: null,
       eventsPerVenueArrayByLat: {},
-      sidePanel: true,
       currentTab: "events"
     }
     let newData = JSON.stringify(data);
@@ -44,18 +41,11 @@ class App extends Component {
     }
     this.state.events = final;
     this.state.ready = true;
-    this.finalizeApp = this.finalizeApp.bind(this);
     this.toggleInfo = this.toggleInfo.bind(this);
     this.toggleHovered = this.toggleHovered.bind(this);
-    this.toggleSidePanel = this.toggleSidePanel.bind(this);
     this.selectTab = this.selectTab.bind(this);
+    this.finalizeApp = this.finalizeApp.bind(this);
   }
-
-  static defaultProps = {
-    center: [30.2672,-97.7431],
-    zoom: 12,
-    options: mapOptions
-  };
 
   finalizeApp(map, maps) {
     this.setState({
@@ -63,6 +53,7 @@ class App extends Component {
       mapApi: maps
     });
   }
+
 
   toggleInfo(event) {
     let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]);
@@ -87,14 +78,6 @@ class App extends Component {
     }
   }
 
-  toggleSidePanel() {
-    let sidePanelElement = document.getElementById("sidePanel");
-    sidePanelElement.classList.toggle("expandPanel");
-    this.setState({
-      sidePanel: sidePanelElement.classList.contains("expandPanel")
-    })
-  }
-
   selectTab(newTab) {
     if (newTab === this.state.currentTab) {
       return;
@@ -106,9 +89,9 @@ class App extends Component {
 
   render() {
     if (this.state.ready) {
-      const eventsMap = this.state.events.map((event, i) => {
+      const eventsList = this.state.events.map((event, i) => {
         if (!event.location) {
-          return;
+          return null;
         }
         return (
           <Marker
@@ -123,7 +106,8 @@ class App extends Component {
           />
         );
       });
-      console.log(eventsMap);
+      const eventsMap = eventsList.filter(pin => {return pin !== null})
+      console.log(eventsList, eventsMap);
       return (
         <div className="App">
           <header className="App-header">
@@ -136,23 +120,20 @@ class App extends Component {
                 eventHovered={this.state.eventHovered}
                 events={this.state.events}
                 currentTab={this.state.currentTab}
-                pushPins={eventsMap}
-              >
-
-              </SidePanel>
+                pushPins={eventsList}
+              />
               <div className="mapContainer">
-                <ReactBingmaps
-                  bingmapKey={ config.bingMapsKey }
-                  center={this.props.center}
-                  zoom={this.props.zoom}
-                  mapOptions={this.props.options}
-                  // onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
+                <GoogleMapReact
+                  bootstrapURLKeys={ {key: config.googleMapsKey} }
+                  defaultCenter={mapConfig.center}
+                  defaultZoom={mapConfig.zoom}
+                  
+                  options={mapConfig.options}
+                  // pushPins={eventsMap}
+                  onGoogleApiLoaded={({ map, maps }) => this.finalizeApp(map, maps)}
                 >
-                  {eventsMap}
-                </ReactBingmaps>
-                <div className={`togglePanel ${this.state.sidePanel ? 'extendToggle' : ''}`} onClick={() => { this.toggleSidePanel() }}>
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </div>
+                {eventsMap}
+                </GoogleMapReact>
               </div>
             </div>
           </header>

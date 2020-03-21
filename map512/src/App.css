@@ -37,6 +37,7 @@
 
 .markerContainer {
   width: fit-content;
+  position: relative;
 }
 
 
@@ -99,6 +100,9 @@
   display: flex;
 }
 .pin {
+  position: absolute;
+  left: -10px;
+  top: -20px;
   cursor: pointer;
 }
 
@@ -107,6 +111,13 @@
   font-size: 24px;
 }
 
+.sidePanelContainer {
+  position: absolute;
+  left: 0;
+  width: auto;
+  display: flex;
+  flex-direction: row;
+}
 
 .sidePanel {
   position: relative;
@@ -124,7 +135,6 @@
   max-width: 350px;
 }
 
-
 .eventCard {
   background-position: center;
   background-size: cover;
@@ -135,8 +145,8 @@
   position: relative;
 }
 
-.togglePanel {
-  position: absolute;
+.sidebar-toggle {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,15 +162,11 @@
   transition: left 0.24s linear;
 }
 
-/* .extendToggle {
-  left: 26vw;
-} */
-
-.togglePanel svg {
+.sidebar-toggle svg {
   transition: transform 0.24s linear;
 }
 
-.extendToggle svg {
+.extend-toggled svg {
   transform: rotate(180deg);
 }
 

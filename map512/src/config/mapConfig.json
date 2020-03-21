@@ -1,0 +1,14 @@
+{
+    "center": [30.2672,-97.7431],
+    "zoom": 12,
+    "options": {
+        "enableClickableLogo": false,
+        "maxZoom": 20,
+        "minZoom": 12,
+        "navigationBarMode": "compact",
+        "showLocateMeButton": false,
+        "streetViewControl": false,
+        "scaleControl": false,
+        "fullscreenControl": false
+    }
+}
