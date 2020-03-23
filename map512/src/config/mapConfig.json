@@ -1,5 +1,8 @@
 {
-    "center": [30.2672,-97.7431],
+    "center": [
+        30.2672,
+        -97.7431
+    ],
     "zoom": 12,
     "options": {
         "enableClickableLogo": false,
@@ -9,6 +12,27 @@
         "showLocateMeButton": false,
         "streetViewControl": false,
         "scaleControl": false,
-        "fullscreenControl": false
+        "fullscreenControl": false,
+        "clickableIcons": false,
+        "styles": [
+            {
+                "featureType": "all",
+                "elementType": "labels.text",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            }
+        ]
     }
 }

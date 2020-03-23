@@ -15,8 +15,9 @@ class App extends Component {
     this.state = {
       events: [],
       ready: false,
-      eventShown: null,
+      eventToggled: null,
       eventHovered: null,
+      eventShown: null,
       mapElement: null,
       mapApi: null,
       eventsPerVenueArrayByLat: {},
@@ -45,6 +46,7 @@ class App extends Component {
     this.toggleHovered = this.toggleHovered.bind(this);
     this.selectTab = this.selectTab.bind(this);
     this.finalizeApp = this.finalizeApp.bind(this);
+    this.showInfo = this.showInfo.bind(this);
   }
 
   finalizeApp(map, maps) {
@@ -56,14 +58,22 @@ class App extends Component {
 
 
   toggleInfo(event) {
-    let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]);
+    this.setState({
+      eventToggled: event && event.eventId ? event.eventId : null
+    });
+    if (!event) return;
+    let latLng = new this.state.mapApi.LatLng(event.location[0]-0.0005, event.location[1]-0.01);
     if (this.state.mapElement.zoom <= 12) {
-      this.state.mapElement.zoom = 15;
+      this.state.mapElement.zoom = 14;
     }
     this.state.mapElement.panTo(latLng);
+  }
+
+  showInfo(event, hideToggle) {
     this.setState({
-      eventShown: event.eventId
+      eventShown: event
     });
+    if (hideToggle) this.toggleInfo(null);
   }
 
   toggleHovered(eventId) {
@@ -96,18 +106,18 @@ class App extends Component {
         return (
           <Marker
             key={i}
-            currentEvent={this.state.eventShown}
+            currentEvent={this.state.eventToggled}
             eventHovered={this.state.eventHovered}
             venueEventListByLat={this.state.eventsPerVenueArrayByLat}
             event={event}
             lat={event.location[0]}
             lng={event.location[1]}
             toggleInfo={this.toggleInfo}
+            showInfo={this.showInfo}
           />
         );
       });
       const eventsMap = eventsList.filter(pin => {return pin !== null})
-      console.log(eventsList, eventsMap);
       return (
         <div className="App">
           <header className="App-header">
@@ -116,7 +126,7 @@ class App extends Component {
                 toggleInfo={this.toggleInfo}
                 toggleHovered={this.toggleHovered}
                 selectTab={this.selectTab}
-                currentEvent={this.state.eventShown}
+                currentEvent={this.state.eventToggled}
                 eventHovered={this.state.eventHovered}
                 events={this.state.events}
                 currentTab={this.state.currentTab}
@@ -134,6 +144,7 @@ class App extends Component {
                 >
                 {eventsMap}
                 </GoogleMapReact>
+                <EventModal event={this.state.eventShown} showInfo={this.showInfo}></EventModal>
               </div>
             </div>
           </header>
